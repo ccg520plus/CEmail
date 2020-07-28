@@ -4,17 +4,17 @@ Mail receiving and sending library based on JavaMail library package
 ## Add it in your root build.gradle at the end of repositories:
 ```
 allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
 	}
+}
 ```
 ## Add the dependency
 ```
 dependencies {
-	        implementation 'com.github.ccg520plus:CEmail:1.0.0'
-	}    
+	implementation 'com.github.ccg520plus:CEmail:1.0.0'
+}    
 ```    
 ## use:
 ### 1.Verify email account:
