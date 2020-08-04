@@ -26,38 +26,129 @@ public class EmailClient implements OnThreadResultListener {
 
     private EmailConfig mEmailConfig;
     private IConnect emailConnect;
+    private Config mReceiveConfig;
+    private Config mSendConfig;
 
     private AbstractTask mTask;
     //接收邮件回调
     private OnEmailResultListener onEmailResultListener;
 
 
-    public EmailClient(EmailConfig config,boolean isLoginAuth) throws Exception {
-        this(config);
+    public EmailClient(){
+        mEmailConfig = new EmailConfig();
+    }
 
-        if (isLoginAuth){
-            emailConnect = new IConnectImpl(mEmailConfig);
-            emailConnect.connect(false);
+    public EmailClient setReceiveConfig(Config mReceiveConfig) {
+        this.mReceiveConfig = mReceiveConfig;
+        return this;
+    }
+
+    public EmailClient setSendConfig(Config mSendConfig) {
+        this.mSendConfig = mSendConfig;
+        return this;
+    }
+
+    public EmailClient imap(String host,int port){
+        if (mReceiveConfig == null){
+            mReceiveConfig = new Config();
         }
+        mReceiveConfig.setHost(host);
+        mReceiveConfig.setPort(port);
+        mReceiveConfig.setProtocolType(EmailRecource.IMAP);
+        return this;
     }
 
-    public EmailClient(EmailConfig config) {
-        mEmailConfig = config;
+    public EmailClient pop3(String host,int port){
+        if (mReceiveConfig == null){
+            mReceiveConfig = new Config();
+        }
+        mReceiveConfig.setHost(host);
+        mReceiveConfig.setPort(port);
+        mReceiveConfig.setProtocolType(EmailRecource.POP3);
+        return this;
     }
+
+    public EmailClient smtp(String host,int port){
+        if (mSendConfig == null){
+            mSendConfig = new Config();
+        }
+        mSendConfig.setHost(host);
+        mSendConfig.setPort(port);
+        mSendConfig.setProtocolType(EmailRecource.SMTP);
+        return this;
+    }
+
+    public EmailClient setUsername(String username){
+        if (mEmailConfig == null){
+            mEmailConfig = new EmailConfig();
+        }
+        mEmailConfig.setUsername(username);
+        return this;
+    }
+
+    public EmailClient setPassword(String password){
+        if (mEmailConfig == null){
+            mEmailConfig = new EmailConfig();
+        }
+        mEmailConfig.setPassword(password);
+        return this;
+    }
+
+    public EmailClient setReadTimeout(long readTimeout) {
+        if (mEmailConfig == null){
+            mEmailConfig = new EmailConfig();
+        }
+        mEmailConfig.setReadTimeout(readTimeout);
+        return this;
+    }
+
+    public EmailClient setConnectTimeout(long connectTimeout) {
+        if (mEmailConfig == null){
+            mEmailConfig = new EmailConfig();
+        }
+        mEmailConfig.setConnectTimeout(connectTimeout);
+        return this;
+    }
+
+    public EmailClient setDebug(boolean debug) {
+        if (mEmailConfig == null){
+            mEmailConfig = new EmailConfig();
+        }
+        mEmailConfig.setDebug(debug);
+        return this;
+    }
+
+    public EmailClient setOnlyReceiveUnreadEmail(boolean onlyReceiveUnreadEmail) {
+        if (mEmailConfig == null){
+            mEmailConfig = new EmailConfig();
+        }
+        mEmailConfig.setOnlyReceiveUnreadEmail(onlyReceiveUnreadEmail);
+        return this;
+    }
+
+    public EmailClient setEmailConfig(EmailConfig emailConfig){
+        mEmailConfig = emailConfig;
+        return this;
+    }
+
+    public EmailClient setConfig(Config config){
+        if (mEmailConfig == null){
+            mEmailConfig = new EmailConfig();
+        }
+        mEmailConfig.setConfig(config);
+        return this;
+    }
+
+
 
     /**
      * 登录认证
-     * @param emailConfig 如果为空,则表示不需要重新登录，而是直接验证登录认证是否正确，反之需要重新换配置登录验证
      * @return
      */
-    public boolean loginAuth(EmailConfig emailConfig){
-        if (emailConfig != null){
-            mEmailConfig = emailConfig;
+    public boolean loginAuth(){
+        setConfig(mReceiveConfig);
+        if (emailConnect == null){
             emailConnect = new IConnectImpl(mEmailConfig);
-        }else{
-            if (emailConnect == null){
-                emailConnect = new IConnectImpl(mEmailConfig);
-            }
         }
         try {
             emailConnect.connect(false);
@@ -76,6 +167,7 @@ public class EmailClient implements OnThreadResultListener {
      */
     public void readAsync(int start, int counts,String folderName, OnEmailResultListener onEmailResultListener){
         this.onEmailResultListener = onEmailResultListener;
+        setConfig(mReceiveConfig);
         mTask = new ReceiceTask(mEmailConfig,emailConnect,start,counts,folderName,false,this);
         execute(mTask);
     }
@@ -90,6 +182,7 @@ public class EmailClient implements OnThreadResultListener {
      */
     public void readingAsync(int start, int counts,String folderName, OnEmailResultListener onEmailResultListener){
         this.onEmailResultListener = onEmailResultListener;
+        setConfig(mReceiveConfig);
         mTask = new ReceiceTask(mEmailConfig,emailConnect,start,counts,folderName,true,this);
         execute(mTask);
     }
@@ -103,6 +196,7 @@ public class EmailClient implements OnThreadResultListener {
      */
     public void sendAsync(String subTitle,String content,String addresses,OnEmailResultListener onEmailResultListener){
         this.onEmailResultListener = onEmailResultListener;
+        setConfig(mSendConfig);
         mTask = new SendTask(mEmailConfig,subTitle,content,addresses,this);
         execute(mTask);
     }
@@ -119,6 +213,7 @@ public class EmailClient implements OnThreadResultListener {
         fetchProfile.add(FetchProfile.Item.ENVELOPE);
         fetchProfile.add(FetchProfile.Item.FLAGS);
         fetchProfile.add(FetchProfile.Item.CONTENT_INFO);
+        setConfig(mReceiveConfig);
         IReceiverImpl iReceiver = new IReceiverImpl(mEmailConfig,fetchProfile,emailConnect);
         return iReceiver.read(start, counts,folderName);
     }

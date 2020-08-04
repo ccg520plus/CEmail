@@ -44,12 +44,37 @@ public class EmailActivity extends AppCompatActivity implements OnEmailResultLis
         String box = getIntent().getStringExtra("box");
         imap(box);
 
+        EmailManager.getInstance()
+                .getClient()
+                .smtp("smtp.gmail.com",587)
+                .sendAsync("SubTitle", "content", "xxxx@hotmail.com", new OnEmailResultListener() {
+                    @Override
+                    public void onReceiveResult(List<Email> emails) {
+
+                    }
+
+                    @Override
+                    public void onSendResult() {
+
+                    }
+
+                    @Override
+                    public void onGetFolders(List<String> folderNames) {
+
+                    }
+
+                    @Override
+                    public void onFailed(Exception e) {
+
+                    }
+                });
+
     }
 
     private void imap(String box){
         EmailManager.getInstance()
                 .getClient()
-                .readingAsync(0, 10, box,this);
+                .readingAsync(0, 10, box, this);
     }
 
     @Override

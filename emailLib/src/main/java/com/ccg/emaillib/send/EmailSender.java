@@ -2,6 +2,7 @@ package com.ccg.emaillib.send;
 
 import android.text.TextUtils;
 
+import com.ccg.emaillib.Config;
 import com.ccg.emaillib.EmailAuthenticator;
 import com.ccg.emaillib.EmailConfig;
 import com.ccg.emaillib.connect.IConnect;
@@ -32,7 +33,11 @@ public class EmailSender {
     }
 
     private void init(boolean isDebug){
-        IPropertyImpl property = new IPropertyImpl(mEmailConfig.getHost(),mEmailConfig.getPort(),"smtp");
+        Config config = mEmailConfig.getConfig();
+        if (config == null){
+            throw new RuntimeException("Please configure host and port for send mail.");
+        }
+        IPropertyImpl property = new IPropertyImpl(config.getHost(),config.getPort(),"smtp");
         EmailAuthenticator emailAuthenticator = new EmailAuthenticator(mEmailConfig.getUsername(),mEmailConfig.getPassword());
         mSession = Session.getInstance(property.getProperties(),emailAuthenticator);
         mSession.setDebug(isDebug);

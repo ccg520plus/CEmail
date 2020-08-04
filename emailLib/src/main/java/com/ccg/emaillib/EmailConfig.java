@@ -2,25 +2,21 @@ package com.ccg.emaillib;
 
 public class EmailConfig {
 
-    private String host;
-    private int port;
+    private Config config;
     private String username;
     private String password;
-    private int protocolType;
 
     private long readTimeout = 30 * 1000;
     private long connectTimeout = 30 * 1000;
     private boolean isDebug = false;
     private boolean isOnlyReceiveUnreadEmail = false;//只对imap协议有效
 
-    public EmailConfig setHost(String host) {
-        this.host = host;
-        return this;
+    public Config getConfig() {
+        return config;
     }
 
-    public EmailConfig setPort(int port) {
-        this.port = port;
-        return this;
+    public void setConfig(Config config) {
+        this.config = config;
     }
 
     public EmailConfig setUsername(String username) {
@@ -33,10 +29,6 @@ public class EmailConfig {
         return this;
     }
 
-    public EmailConfig setProtocolType(int protocolType) {
-        this.protocolType = protocolType;
-        return this;
-    }
 
     public EmailConfig setReadTimeout(long readTimeout) {
         this.readTimeout = readTimeout;
@@ -58,24 +50,12 @@ public class EmailConfig {
         return this;
     }
 
-    public String getHost() {
-        return host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
     public String getUsername() {
         return username;
     }
 
     public String getPassword() {
         return password;
-    }
-
-    public int getProtocolType() {
-        return protocolType;
     }
 
     public long getReadTimeout() {

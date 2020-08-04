@@ -10,11 +10,14 @@ public class EmailManager {
     private EmailClient mClient;
 
     private EmailManager() {
-
+        mClient = new EmailClient();
     }
 
     public EmailManager config(EmailConfig config){
-        mClient = new EmailClient(config);
+        if (mClient == null){
+            mClient = new EmailClient();
+        }
+        mClient.setEmailConfig(config);
         return this;
     }
 

@@ -1,5 +1,6 @@
 package com.ccg.emaillib.receive;
 
+import com.ccg.emaillib.Config;
 import com.ccg.emaillib.EmailConfig;
 import com.ccg.emaillib.EmailRecource;
 import com.ccg.emaillib.connect.IConnect;
@@ -32,9 +33,13 @@ public class IReceiverImpl implements IReceiver{
     }
 
     private void init(){
-        if (mEmailConfig.getProtocolType() == EmailRecource.IMAP){
+        Config config = mEmailConfig.getConfig();
+        if (config == null){
+            throw new RuntimeException("Please configure host and port for receiving mail.");
+        }
+        if (config.getProtocolType() == EmailRecource.IMAP){
             mReceiver = new IMAPReceiver(mEmailConfig.isOnlyReceiveUnreadEmail(),mFetchProfile,connect);
-        }else if (mEmailConfig.getProtocolType() == EmailRecource.POP3){
+        }else if (config.getProtocolType() == EmailRecource.POP3){
             mReceiver = new POP3Receiver(mFetchProfile,connect);
         }
     }

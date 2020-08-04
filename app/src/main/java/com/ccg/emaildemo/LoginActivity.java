@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.ccg.emaillib.EmailClient;
 import com.ccg.emaillib.EmailConfig;
 import com.ccg.emaillib.EmailRecource;
 import com.ccg.emaildemo.email.EmailManager;
@@ -67,20 +68,20 @@ public class LoginActivity extends AppCompatActivity {
                                     .setUsername(username)
                                     .setPassword(password)
                                     .setDebug(true);
-
+                            EmailManager.getInstance()
+                                    .config(emailConfig);
                             if (type == GMAIL){
-                                emailConfig.setHost("imap.gmail.com")
-                                        .setPort(993)
-                                        .setProtocolType(EmailRecource.IMAP);
+                                EmailManager.getInstance()
+                                        .getClient()
+                                        .imap("imap.gmail.com",993);
                             }else if (type ==HOTMAIL){
-                                emailConfig.setHost("outlook.office365.com")
-                                        .setPort(993)
-                                        .setProtocolType(EmailRecource.IMAP);
+                                EmailManager.getInstance()
+                                        .getClient()
+                                        .imap("outlook.office365.com",993);
                             }
-
-                            final boolean loginSuccess = EmailManager.getInstance().config(emailConfig)
+                            final boolean loginSuccess = EmailManager.getInstance()
                                     .getClient()
-                                    .loginAuth(null);
+                                    .loginAuth();
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {

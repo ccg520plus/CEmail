@@ -1,5 +1,6 @@
 package com.ccg.emaillib.connect;
 
+import com.ccg.emaillib.Config;
 import com.ccg.emaillib.EmailAuthenticator;
 import com.ccg.emaillib.EmailConfig;
 import com.ccg.emaillib.EmailRecource;
@@ -52,11 +53,15 @@ public class IConnectImpl implements IConnect {
         if (mStore == null || !mStore.isConnected()){
             System.out.println("re-login");
             Session session = null;
-
-            if (mEmailConfig.getProtocolType() == EmailRecource.POP3){
-                mProperty = new IPropertyImpl(mEmailConfig.getHost(),mEmailConfig.getPort(),"pop3");
-            }else if (mEmailConfig.getProtocolType() == EmailRecource.IMAP){
-                mProperty = new IPropertyImpl(mEmailConfig.getHost(),mEmailConfig.getPort(),"imap");
+            Config config =  mEmailConfig.getConfig();
+            if (config != null) {
+                if (config.getProtocolType() == EmailRecource.POP3){
+                    mProperty = new IPropertyImpl(config.getHost(),config.getPort(),"pop3");
+                }else if (config.getProtocolType() == EmailRecource.IMAP){
+                    mProperty = new IPropertyImpl(config.getHost(),config.getPort(),"imap");
+                }
+            }else{
+                throw new RuntimeException("Please configure host and port for receiving mail.");
             }
             if (mProperty == null){
                 throw new RuntimeException("receive email that only support pop3 and imap.");
@@ -69,13 +74,13 @@ public class IConnectImpl implements IConnect {
             if (session != null){
                 session.setDebug(mEmailConfig.isDebug());
 
-                if (mEmailConfig.getProtocolType() == EmailRecource.POP3){
+                if (config.getProtocolType() == EmailRecource.POP3){
                     mStore  = session.getStore("pop3");
-                }else if (mEmailConfig.getProtocolType() == EmailRecource.IMAP){
+                }else if (config.getProtocolType() == EmailRecource.IMAP){
                     mStore = session.getStore("imap");
                 }
-                mStore.connect(mEmailConfig.getHost(),
-                        mEmailConfig.getPort(),
+                mStore.connect(config.getHost(),
+                        config.getPort(),
                         mEmailConfig.getUsername(),
                         mEmailConfig.getPassword());
             }
@@ -86,15 +91,20 @@ public class IConnectImpl implements IConnect {
 
     private boolean isReset(){
         boolean isReset = false;
-        if (!currentEmailHost.equals(mEmailConfig.getHost()) || currentEmailPort != mEmailConfig.getPort()
+        Config config = mEmailConfig.getConfig();
+        if (config == null){
+            throw new RuntimeException("Please configure host and port for receiving mail.");
+        }
+        if (!currentEmailHost.equals(config.getHost())
+                || currentEmailPort != config.getPort()
                 || !currentUsername.equals(mEmailConfig.getUsername())
                 || !currentPassword.equals(mEmailConfig.getPassword())
-                || currentProtocolType != mEmailConfig.getProtocolType() ){
-            currentEmailHost = mEmailConfig.getHost();
-            currentEmailPort = mEmailConfig.getPort();
+                || currentProtocolType != config.getProtocolType() ){
+            currentEmailHost = config.getHost();
+            currentEmailPort = config.getPort();
             currentUsername = mEmailConfig.getUsername();
             currentPassword = mEmailConfig.getPassword();
-            currentProtocolType = mEmailConfig.getProtocolType();
+            currentProtocolType = config.getProtocolType();
             isReset = true;
         }
         return isReset;
