@@ -13,7 +13,7 @@ allprojects {
 ## Add the dependency
 ```
 dependencies {
-	implementation 'com.github.ccg520plus:CEmail:1.0.0'
+	implementation 'com.github.ccg520plus:CEmail:1.0.1'
 }    
 ```    
 ## use:
