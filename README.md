@@ -23,12 +23,11 @@ dependencies {
 EmailConfig emailConfig = new EmailConfig()
             .setUsername(username)
             .setPassword(password)
-            .setHost("imap.gmail.com")
-            .setPort(993)
-            .setProtocolType(EmailRecource.IMAP)
             .setDebug(true);
-EmailClient mClient = new EmailClient(config);
-mClient.loginAuth(null);
+EmailClient mClient = new EmailClient()
+	.setEmailConfig(emailConfig)
+	.imap("imap.gmail.com",993);
+mClient.loginAuth();
 ```
 
 Since this step is a time-consuming operation, it must be executed in a child thread.
@@ -63,6 +62,7 @@ mClient.readingAsync(start, size, "INBOX",new OnEmailResultListener() {
 ### 3.send email,but the host and port in the mailbox configuration need to be updated:
 
 ```
+mClient.smtp("smtp.gmail.com",587);
 mClient.sendAsync("SubTitle", "content", "xxxx@hotmail.com", new OnEmailResultListener() {
                     @Override
                     public void onReceiveResult(List<Email> emails) {
